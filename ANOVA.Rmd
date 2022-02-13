@@ -1,0 +1,162 @@
+---
+title: "One Way Anova Test for Student's Performance"
+author: "Sweta Swarupa"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+geometry: left=2cm,right=2cm,top=2cm,bottom=2cm
+---
+
+```{css, include=FALSE, echo = FALSE}
+.remark-slide-content {
+  font-size: 24px;
+  padding: 20px 60px 20px 60px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 20px;
+}
+.huge .remark-code {
+  font-size: 100% !important;
+}
+.tiny .remark-code {
+  font-size: 50% !important;
+}
+```
+
+# Introduction
+
+This dataset consists of student test score data for subjects including math, reading, and writing. In this analysis I am going to conduct one-way ANOVA test and analysis of Variance Post-Hoc test to determine the impact of the categorical variables (‘gender’, ‘race/ethnicity’, ‘parental level of education’, ‘lunch’, ‘test preparation course’) on student's math, reading, and writing test scores.
+
+# Reading file
+```{r, collapse = TRUE}
+students <- read.csv("C:/ANOVA/StudentsPerformance.csv")
+str(students)
+```
+
+There are 1000 observations and 8 variables. There are 5 categorical variables and 3 different student scores - math, reading and writing scores.
+
+# Checking Categorical Variables
+```{r, collapse = TRUE}
+table(students$gender)
+table(students$race.ethnicity)
+table(students$parental.level.of.education)
+table(students$lunch)
+table(students$test.preparation.course )
+```
+
+One of the limitations of a one-way ANOVA is that it compares three or more than three categorical groups to establish whether there is a difference between them. Within each group there should be three or more observations to compare means of the samples. 
+
+Since the variables gender, lunch and test preparation course have only 2 groups, we will be doing one-way ANOVA tests for race/ethnicity and parental level of education.
+
+# Ploting Histograms for Math, Reading and Writing scores
+```{r, collapse = TRUE}
+hist(students$math.score)
+hist(students$reading.score)
+hist(students$writing.score)
+```
+
+All three test scores have normal distribution.
+
+# One-Way ANOVA Test
+
+One-Way ANOVA hypothesis:
+
+Null hypothesis (H0): There is no difference between groups and have equal means.
+Alternative hypothesis (H1): There is a difference between the means of three groups.
+
+One-Way Anova assumptions:
+
+Normality: Each sample is taken from a normally distributed population
+Sample independence: Each sample has been drawn independently of the other samples
+Variance equality: The variance of data in the different groups should be the same
+Dependent variable: Should be continuous
+Hypothesis: Using a 95% confidence internal
+
+
+## Anova for Ethnicity on Math Score
+```{r, collapse = TRUE}
+boxplot(students$math.score ~ students$race.ethnicity, data = students)
+anova.em <- aov(students$math.score ~ students$race.ethnicity, data = students)
+summary(anova.em)
+
+TukeyHSD(anova.em)
+plot(TukeyHSD(anova.em))
+```
+
+By just looking at the box plot, we can tell that median of group E is higher than other groups. The p value is lower than .001. Hence, we can reject the null hypothesis. The tukey score also shows that the means are very different for group E and A, Group E and B, group E and C. 
+
+
+## Anova for Ethnicity on Reading Score
+```{r, collapse = TRUE}
+boxplot(students$reading.score ~ students$race.ethnicity, data = students)
+anova.er <- aov(students$reading.score ~ students$race.ethnicity, data = students)
+summary(anova.er)
+
+TukeyHSD(anova.er)
+plot(TukeyHSD(anova.er))
+```
+
+Similar to math score, p value of reading score is also less that .001. The difference in mean between the groups are less for reading compared to maths. The means are very different for group E and A, Group E and B, group D and A. Group C and D looks very similar to each other.
+
+
+## Anova for Ethnicity on Writing Score
+```{r, collapse = TRUE}
+boxplot(students$writing.score ~ students$race.ethnicity, data = students)
+anova.ew <- aov(students$writing.score ~ students$race.ethnicity, data = students)
+summary(anova.ew)
+
+TukeyHSD(anova.ew)
+plot(TukeyHSD(anova.ew))
+```
+
+The p value is less than .001. Group B and C looks very similar. Group D and E looks very similar. Mean values between group E and A and group D and A is very high.
+
+## Anova for Parental Education on Math Score
+```{r, collapse = TRUE}
+boxplot(students$math.score ~ students$parental.level.of.education, data = students)
+anova.pm <- aov(students$math.score ~ students$parental.level.of.education, data = students)
+summary(anova.pm)
+
+TukeyHSD(anova.pm)
+plot(TukeyHSD(anova.pm))
+```
+
+By just looking at the box plot we can say that the median for parents with high school education is lower than parents with higher education. The p value is less than .001 so we can reject the null hypothesis. The tukey score also shows that the mean between high school-bachelor's degree, some high school-master's degree, some high school-bachelor's degree and high school-associate's degree is very high.
+
+## Anova for Parental Education on Reading Score
+```{r, collapse = TRUE}
+boxplot(students$reading.score ~ students$parental.level.of.education, data = students)
+anova.pr <- aov(students$reading.score ~ students$parental.level.of.education, data = students)
+summary(anova.pr)
+
+TukeyHSD(anova.pr)
+plot(TukeyHSD(anova.pr))
+```
+
+Similar to math score, p value for reading score is less than .001, so we can reject the null hypothesis.The tukey score shows that the mean between master's degree-high school, some high school-master's degree, high school-bachelor's degree, high school-associate's degree is very high.
+
+## Anova for Parental Education on Writing Score
+```{r, collapse = TRUE}
+boxplot(students$writing.score ~ students$parental.level.of.education, data = students)
+anova.pw <- aov(students$writing.score ~ students$parental.level.of.education, data = students)
+summary(anova.pw)
+
+TukeyHSD(anova.pw)
+plot(TukeyHSD(anova.pw))
+```
+
+Again p value is less than .001. There is huge difference in the mean values for different groups.
+
+
+# Discussion 
+
+Race/Ethnicity and Parental level of Education was statistically tested against the exam scores using a 1-Way ANOVA test. This test allows us to accurately confirm that both Race/Ethnicity and Parental level of Education has an impact on students test scores. Using a 95% confidence interval, we achieved p-values less than  0.001 for each category of data. This allows us to reject our null hypothesis and summarize that the both the categorical data has a significant impact on the reading, writing, and math scores.
